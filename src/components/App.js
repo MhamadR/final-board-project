@@ -1,8 +1,9 @@
+import Boards from "./Boards";
 
 function App() {
   return (
     <div className="App">
-     Hello
+     <Boards />
     </div>
   );
 }
