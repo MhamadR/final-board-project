@@ -14,12 +14,12 @@ const firebaseConfig = {
   storageBucket: "planit-f778c.appspot.com",
   messagingSenderId: "575208077078",
   appId: "1:575208077078:web:819cfb60846184ddf40237",
-  measurementId: "G-L2MMQVS5SR"
+  measurementId: "G-L2MMQVS5SR",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app);
 
 export default db;
