@@ -5,12 +5,16 @@ import {
   onSnapshot,
   doc,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 import db from "../Firebase";
 import BoardForm from "./BoardForm";
 
 function Boards() {
   const [boardList, setBoardList] = useState([]);
+  const [isBoardNew, setIsBoardNew] = useState(false);
+  const [isBoardEdit, setIsBoardEdit] = useState(false);
+  const [editBoard, setEditBoard] = useState();
 
   useEffect(() => {
     onSnapshot(
@@ -42,20 +46,45 @@ function Boards() {
   const deleteDocument = async (id) => {
     await deleteDoc(doc(db, "boards", id));
   };
+
+  const updateDocument = async (data) => {
+    const dataRef = doc(db, "boards", data.id);
+
+    // Set the "capital" field of the city 'DC'
+    await updateDoc(dataRef, data);
+  };
   return (
     <div>
-      <BoardForm onSubmit={addDocument} />
-      <button>New Board</button>
+      {isBoardNew ? (
+        <BoardForm onSubmit={addDocument} submitBtn="Add Board" />
+      ) : null}
+      <button onClick={() => setIsBoardNew((prev) => !prev)}>New Board</button>
       {boardList
         ? boardList.map((board) => {
             return (
               <div key={board.id}>
                 <h2>{board.title}</h2>
+
+                <button
+                  onClick={() => {
+                    setIsBoardEdit((prev) => !prev);
+                    setEditBoard(() => board);
+                  }}
+                >
+                  Edit
+                </button>
                 <button onClick={() => deleteDocument(board.id)}>Delete</button>
               </div>
             );
           })
         : null}
+      {isBoardEdit ? (
+        <BoardForm
+          onSubmit={updateDocument}
+          submitBtn="Save"
+          data={editBoard}
+        />
+      ) : null}
     </div>
   );
 }

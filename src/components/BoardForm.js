@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-function BoardForm({ onSubmit }) {
+function BoardForm({ onSubmit, submitBtn, data }) {
   const [board, setBoard] = useState({
     title: "",
     columns: ["To-Do"],
@@ -8,6 +8,10 @@ function BoardForm({ onSubmit }) {
     "start-date": "",
     "end-date": "",
   });
+
+  useEffect(() => {
+    if (data) setBoard(() => data);
+  }, []);
 
   const handleInputChange = (event) => {
     setBoard((prev) => {
@@ -57,7 +61,7 @@ function BoardForm({ onSubmit }) {
         value={board.goal}
         onChange={handleInputChange}
       />
-      <input type="submit" value="Add Board" />
+      <input type="submit" value={submitBtn} />
     </form>
   );
 }
