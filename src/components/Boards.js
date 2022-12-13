@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import db from "../Firebase";
 import BoardForm from "./BoardForm";
 
@@ -32,6 +38,10 @@ function Boards() {
   const addDocument = async (data) => {
     await addDoc(collection(db, "boards"), { ...data });
   };
+
+  const deleteDocument = async (id) => {
+    await deleteDoc(doc(db, "boards", id));
+  };
   return (
     <div>
       <BoardForm onSubmit={addDocument} />
@@ -41,6 +51,7 @@ function Boards() {
             return (
               <div key={board.id}>
                 <h2>{board.title}</h2>
+                <button onClick={() => deleteDocument(board.id)}>Delete</button>
               </div>
             );
           })
