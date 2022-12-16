@@ -15,12 +15,33 @@ import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import { ReactComponent as PlusIcon } from "../Assets/plus-icon.svg";
 
 function Boards() {
   const [boardList, setBoardList] = useState([]);
   const [isBoardNew, setIsBoardNew] = useState(false);
   const [isBoardEdit, setIsBoardEdit] = useState(false);
   const [editBoard, setEditBoard] = useState();
+
+  const onPopupForm = (e) => {
+    const boardForm = document.querySelector("#boardForm");
+    const addBoard = document.querySelector(".add");
+    if (
+      !boardForm.contains(e.target) &&
+      !e.target.classList.contains("edit") &&
+      !addBoard.contains(e.target)
+    ) {
+      setIsBoardEdit(() => false);
+      setIsBoardNew(() => false);
+      window.removeEventListener("click", onPopupForm);
+    }
+  };
+
+  useEffect(() => {
+    if (isBoardEdit || isBoardNew) {
+      window.addEventListener("click", onPopupForm);
+    }
+  }, [isBoardEdit, isBoardNew]);
 
   useEffect(() => {
     onSnapshot(
@@ -36,6 +57,12 @@ function Boards() {
             setBoardList((prev) =>
               prev.filter((board) => board.id !== change.doc.id)
             );
+          } else if (change.type === "modified") {
+            setBoardList((prev) => [
+              ...prev.map((board) =>
+                change.doc.id === board.id ? change.doc.data() : board
+              ),
+            ]);
           }
         });
       },
@@ -47,6 +74,8 @@ function Boards() {
 
   const addDocument = async (data) => {
     await addDoc(collection(db, "boards"), { ...data });
+    setIsBoardNew(() => false);
+    window.removeEventListener("click", onPopupForm);
   };
 
   const deleteDocument = async (id) => {
@@ -56,8 +85,9 @@ function Boards() {
   const updateDocument = async (data) => {
     const dataRef = doc(db, "boards", data.id);
 
-    // Set the "capital" field of the city 'DC'
     await updateDoc(dataRef, data);
+    setIsBoardEdit(() => false);
+    window.removeEventListener("click", onPopupForm);
   };
 
   const boards = boardList.map((board) => {
@@ -75,8 +105,8 @@ function Boards() {
             >
               <Dropdown.Item
                 as="button"
-                className="text-center"
-                onClick={() => {
+                className="text-center edit"
+                onClick={(e) => {
                   setIsBoardEdit((prev) => !prev);
                   setEditBoard(() => board);
                 }}
@@ -101,19 +131,6 @@ function Boards() {
           </Card.Footer>
         </Card>
       </Col>
-      // <div key={board.id}>
-      //   <h2>{board.title}</h2>
-
-      //   <button
-      //     onClick={() => {
-      //       setIsBoardEdit((prev) => !prev);
-      //       setEditBoard(() => board);
-      //     }}
-      //   >
-      //     Edit
-      //   </button>
-      //   <button onClick={() => deleteDocument(board.id)}>Delete</button>
-      // </div>
     );
   });
 
@@ -121,22 +138,35 @@ function Boards() {
     <div>
       {isBoardNew ? (
         <BoardForm onSubmit={addDocument} submitBtn="Add Board" />
-      ) : null}
-      <button onClick={() => setIsBoardNew((prev) => !prev)}>New Board</button>
-      {boardList ? (
-        <Container>
-          <Row xs={1} md={3} lg={4} className="g-4">
-            {boards}
-          </Row>
-        </Container>
-      ) : null}
-      {isBoardEdit ? (
+      ) : isBoardEdit ? (
         <BoardForm
           onSubmit={updateDocument}
           submitBtn="Save"
           data={editBoard}
         />
       ) : null}
+
+      <Container className="mt-4">
+        <Row xs={1} md={3} lg={4} className="g-4">
+          {boardList ? boards : null}
+          <Col>
+            <Card
+              className="h-100 w-100 d-flex justify-content-center align-items-center add"
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                if (isBoardNew) {
+                  window.removeEventListener("click", onPopupForm);
+                  setIsBoardNew((prev) => !prev);
+                } else {
+                  setIsBoardNew((prev) => !prev);
+                }
+              }}
+            >
+              <PlusIcon className="w-25 h-25" />
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 }

@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import Container from "react-bootstrap/Container";
 
 function BoardForm({ onSubmit, submitBtn, data }) {
   const [board, setBoard] = useState({
@@ -25,44 +28,57 @@ function BoardForm({ onSubmit, submitBtn, data }) {
   };
 
   return (
-    <form
-      style={{ display: "flex", flexDirection: "column" }}
-      onSubmit={handleSubmit}
+    <Container
+      fluid
+      className="position-absolute d-flex justify-content-center"
     >
-      <label htmlFor="title">Title:</label>
-      <input
-        name="title"
-        type="text"
-        id="title"
-        value={board.title}
-        onChange={handleInputChange}
-      />
-      <label htmlFor="start">Start Date:</label>
-      <input
-        name="start-date"
-        type="datetime-local"
-        id="start"
-        value={board["start-date"]}
-        onChange={handleInputChange}
-      />
-      <label htmlFor="end">End Date:</label>
-      <input
-        name="end-date"
-        type="datetime-local"
-        id="end"
-        value={board["end-date"]}
-        onChange={handleInputChange}
-      />
-      <label htmlFor="goal">Goal:</label>
-      <input
-        name="goal"
-        type="text"
-        id="goal"
-        value={board.goal}
-        onChange={handleInputChange}
-      />
-      <input type="submit" value={submitBtn} />
-    </form>
+      <Form
+        className="d-flex flex-column p-5 w-50 border border-light mt-4 rounded"
+        style={{ zIndex: "1000", backgroundColor: "rgba(238, 239, 240, 1)" }}
+        onSubmit={handleSubmit}
+        id="boardForm"
+      >
+        <Form.Group className="mb-3" controlId="formBasicTitle">
+          <Form.Label>Title:</Form.Label>
+          <Form.Control
+            name="title"
+            type="text"
+            value={board.title}
+            onChange={handleInputChange}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicStartDate">
+          <Form.Label>Start Date:</Form.Label>
+          <Form.Control
+            name="start-date"
+            type="datetime-local"
+            value={board["start-date"]}
+            onChange={handleInputChange}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicEndDate">
+          <Form.Label>End Date:</Form.Label>
+          <Form.Control
+            name="end-date"
+            type="datetime-local"
+            value={board["end-date"]}
+            onChange={handleInputChange}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicEndDate">
+          <Form.Label>Goal:</Form.Label>
+          <Form.Control
+            name="goal"
+            type="text"
+            value={board.goal}
+            onChange={handleInputChange}
+          />
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          {submitBtn}
+        </Button>
+      </Form>
+    </Container>
   );
 }
 
